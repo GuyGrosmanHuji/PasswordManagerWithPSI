@@ -36,8 +36,18 @@ class Backend:
         # key = user_key
         return key
 
-
     def _verify_user(self, user_name):
         return self.login_file.verify(user_name)
 
+    def add_login_details(self, user_name, user_key, login_name, login_password):
+        encrypted_login_name = encrypt(login_name, user_key)
+        encrypted_login_password = encrypt(login_password, user_key)
 
+        encrypted_login_name = encrypted_login_name.decode()
+        encrypted_login_password = encrypted_login_password.decode()
+
+        self.passwords_file.add_login_details(user_name, encrypted_login_name,
+                                              encrypted_login_password)
+
+    def get_user_login_names(self, user_name):
+        return self.passwords_file.get_user_login_names(user_name)

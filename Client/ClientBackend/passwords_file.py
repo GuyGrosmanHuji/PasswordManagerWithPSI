@@ -30,14 +30,20 @@ class PasswordsFile:
                                         PasswordsFile.LOGIN_PASSWORD: encrypted_login_password})
             json.dump(pws_data, pw_json, indent=JSON_INDENT)
 
+    def get_user_passwords(self, user_name):
+        with open(os.path.join(BASE_DIR, PasswordsFile.PASSWORDS_FILENAME),
+                  WRITE_MOD) as login_json:
+            login_data = json.load(login_json)
+            return login_data[user_name].values()
+
     def get_password(self, user_name, encrypted_login_username):
         with open(os.path.join(BASE_DIR, PasswordsFile.PASSWORDS_FILENAME),
                   WRITE_MOD) as login_json:
             login_data = json.load(login_json)
             return login_data[user_name][encrypted_login_username]
 
-    def get_user_passwords_list(self, user_name):
+    def get_user_login_names(self, user_name):
         with open(os.path.join(BASE_DIR, PasswordsFile.PASSWORDS_FILENAME),
                   WRITE_MOD) as login_json:
             login_data = json.load(login_json)
-            return [v for v in login_data[user_name].values()]
+            return login_data[user_name].keys()
