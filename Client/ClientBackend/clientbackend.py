@@ -3,11 +3,15 @@ from typing import Optional, List, Tuple
 from Client.ClientBackend.users_table import UsersTable
 
 
-class Backend:
-    def __init__(self, username: str, password: str):
-        # TODO if there is an exception during the creation of UsersTable, we should catch in the
-        #  client's frontend
-        self.users_table = UsersTable(username, password)
+class ClientBackend:
+    def __init__(self):
+        self.users_table = UsersTable()
+
+    def register_user(self,  username: str, password: str):
+        self.users_table.register(username,password)
+
+    def verify_user(self, username:str, password:str):
+        self.users_table.verify(username, password)
 
     def write_login_details(self, login_details: Optional[List[str], Tuple[str]]) -> None:
         self.users_table.save(login_details)
