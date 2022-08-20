@@ -7,10 +7,10 @@ class ClientBackend:
     def __init__(self):
         self.users_table = UsersTable()
 
-    def register_user(self,  username: str, password: str):
-        self.users_table.register(username,password)
+    def register_user(self, username: str, password: str):
+        self.users_table.register(username, password)
 
-    def verify_user(self, username:str, password:str):
+    def verify_user(self, username: str, password: str):
         self.users_table.verify(username, password)
 
     def write_login_details(self, login_details: Optional[List[str], Tuple[str]]) -> None:
