@@ -4,9 +4,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 JSON_INDENT = 4
 
-JSON_USERNAME = "user"
-JSON_PASSWORD = "password"
+WRITE_MODE = 'r+'
 
-FILE_BEGIN = 0
-
-WRITE_MOD = 4
+SIGN_UP_MODE = "signup"
+SIGN_IN_MODE = "signin"
