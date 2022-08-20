@@ -9,7 +9,7 @@ def generate_key(password):
 
 def encrypt(plaintext, key):
     f = Fernet(key)
-    return f.encrypt(plaintext.encode(), key)
+    return f.encrypt(plaintext.encode()).decode()
 
 
 def decrypt(ciphertext, key):

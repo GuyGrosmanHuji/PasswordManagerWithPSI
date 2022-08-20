@@ -16,7 +16,7 @@ class WrongPassword(Exception):
         self._cause = cause
 
 
-class LoginSiteNotExists(Exception):
+class UnregisteredLoginSite(Exception):
     def __init__(self, message, cause=None):
-        super(LoginSiteNotExists, self).__init__(message)
+        super(UnregisteredLoginSite, self).__init__(message)
         self._cause = cause

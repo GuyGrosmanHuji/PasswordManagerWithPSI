@@ -13,8 +13,13 @@ class ClientBackend:
     def verify_user(self, username: str, password: str):
         self.users_table.verify(username, password)
 
-    def write_login_details(self, login_details: Optional[List[str], Tuple[str]]) -> None:
-        self.users_table.save(login_details)
+    def write_login_details(self,
+                            login_details: Optional[List[str], Tuple[str]],
+                            mode: str) -> None:
+        self.users_table.save(login_details, mode)
+
+    def delete_login_details(self, login_site:str) -> None:
+        self.users_table.delete()
 
     def load_login_details(self, login_site: str) -> List[str]:
         return self.users_table.load(login_site)
