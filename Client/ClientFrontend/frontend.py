@@ -12,10 +12,6 @@ from Client.ClientFrontend.inputs import *
 
 
 class Frontend:
-    SITE_IDX = 0
-    USERNAME_IDX = 1
-    PASSWORD_IDX = 2
-
     def __init__(self):
         self.client_backend = ClientBackend()
         self.server_backend = ServerBackend()
@@ -63,11 +59,15 @@ class Frontend:
                 print(MAIN_OPTS_MSG)
                 opt = input()
             try:
-                if opt == ADD_PASSWORD:
-                    self._add_password()
-                elif opt == RETRIEVE_PASSWORD:
-                    self._retrieve_password()
-                elif opt == RETRIEVE_ALL:
+                if opt == ADD_LOG_DETAILS:
+                    self._write_login_details(mode="add")
+                elif opt == EDIT_LOG_DETAILS:
+                    self._write_login_details(mode="edit")
+                elif opt == DELETE_LOG_DETAILS:
+                    self._delete_login_details()
+                elif opt == RETRIEVE_LOG_DETAILS:
+                    self._retrieve_login_details()
+                elif opt == RETRIEVE_ALL_LOG_DETAILS:
                     self._retrieve_all_login_sites()
                 elif opt == QUIT:
                     print(GOODBYE_MSG)
@@ -79,13 +79,18 @@ class Frontend:
     def _psi(self):
         pass
 
-    def _add_password(self):
+    def _write_login_details(self, mode: str):
         login_site = input(SITE_MSG)
         login_username = input(USERNAME_MSG)
         login_password = getpass(prompt=PASSWORD_MSG, stream="*")
-        self.client_backend.write_login_details(login_site, login_username, login_password)
+        self.client_backend.write_login_details(login_site, login_username, login_password, mode)
 
-    def _retrieve_password(self):
+    def _delete_login_details(self):
+        login_site = input(SITE_MSG)
+        self.client_backend.delete_login_details(login_site)
+        print(f"{login_site}" + DELETE_COMPLETED_MSG)
+
+    def _retrieve_login_details(self):
         login_site = input(SITE_MSG)
         login_username, login_password = \
             self.client_backend.retrieve_login_details(login_site)
