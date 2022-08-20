@@ -132,7 +132,7 @@ class UsersTable:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_MODE) as users_table:
             users_table_data = json.load(users_table)
-            return list(set(self._decrypt_login_details(users_table_data[self.username].keys())))
+            return list(self._decrypt_login_details(users_table_data[self.username].keys()))
 
     def get_login_passwords(self) -> List[str]:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),

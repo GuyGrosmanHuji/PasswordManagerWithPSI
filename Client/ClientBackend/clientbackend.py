@@ -19,7 +19,7 @@ class ClientBackend:
         self.users_table.save(login_details, mode)
 
     def delete_login_details(self, login_site:str) -> None:
-        self.users_table.delete()
+        self.users_table.delete(login_site)
 
     def load_login_details(self, login_site: str) -> List[str]:
         return self.users_table.load(login_site)
