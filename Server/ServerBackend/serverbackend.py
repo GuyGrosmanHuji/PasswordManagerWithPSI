@@ -1,6 +1,6 @@
 from Server.ServerBackend.passwordstable import PasswordsTable
 
-class Backend:
+class ServerBackend:
     def __init__(self):
         self.passwords_table = PasswordsTable()
 
