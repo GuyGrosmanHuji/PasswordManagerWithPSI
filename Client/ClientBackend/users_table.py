@@ -3,7 +3,7 @@ import json
 import random
 import string
 
-from typing import Optional, Dict, List, Tuple, Set
+from typing import Union, Dict, List, Tuple
 
 from Client.ClientBackend.exceptions import *
 from Client.ClientBackend.config import *
@@ -32,15 +32,26 @@ class UsersTable:
         self.username = username
         self.master_key = generate_key(password)
         if mode == SIGN_UP_MODE:
-            self.save()
+            self.register()
         elif mode == SIGN_IN_MODE:
             self.verify()
 
-    def save(self, login_details: Optional[List[str], Tuple[str]]):
+    def register(self):
         with open(os.path.join(BASE_DIR, UsersTable.USERS_TABLE_FILENAME), WRITE_MODE) as table:
             table_data = json.load(table)
-            login_details = self._generate_dummy_login_details() \
-                if not login_details else login_details
+            if self.username in table_data.keys():
+                raise UnavailableUsername("This username is unavailable.")
+            login_details = self._generate_dummy_login_details()
+            encrypted_login_details = self._encrypt_login_details(login_details)
+            encrypted_login_details = UsersTable._arrange_login_details(encrypted_login_details)
+            table_data[self.username] = {}
+            passwords = table_data[self.username].update(encrypted_login_details)
+            table_data.update({UsersTable.USERNAME: self.username, UsersTable.PASSWORDS: passwords})
+            json.dump(table_data, table, indent=JSON_INDENT)
+
+    def save(self, login_details: Union[List[str], Tuple[str]]):
+        with open(os.path.join(BASE_DIR, UsersTable.USERS_TABLE_FILENAME), WRITE_MODE) as table:
+            table_data = json.load(table)
             encrypted_login_details = self._encrypt_login_details(login_details)
             encrypted_login_details = UsersTable._arrange_login_details(encrypted_login_details)
             passwords = table_data[self.username].update(encrypted_login_details)

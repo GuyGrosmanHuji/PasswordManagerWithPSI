@@ -1,3 +1,9 @@
+class UnavailableUsername(Exception):
+    def __init__(self, message, cause=None):
+        super(UnavailableUsername, self).__init__(message)
+        self._cause = cause
+
+
 class UnregisteredUser(Exception):
     def __init__(self, message, cause=None):
         super(UnregisteredUser, self).__init__(message)
