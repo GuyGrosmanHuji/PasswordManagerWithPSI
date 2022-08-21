@@ -1,12 +1,12 @@
 from math import log2
 
 # modulus parameters for SEAL homomorphic-encryption:
-plain_modulus = 536903681                           # 29-bit length - reduces false-positives probability
+plain_modulus = 536903681                               # 29-bit length - reduces false-positives probability
 poly_modulus_degree = 2 ** 13
 
 output_bits = 13
 
-hash_seeds = (5194815923, 1847875896, 2348657587)   # each seed defines a unique murmur hash function.
+hash_seeds = (5194815923, 1847875896, 2348657587)       # each seed defines a unique murmur hash function.
 
 num_parts = 4       # partitioning parameter - alpha in the article
 

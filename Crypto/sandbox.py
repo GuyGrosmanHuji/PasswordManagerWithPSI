@@ -7,9 +7,8 @@ passwords = ["hello", "welcome", "sup"]
 #     print(f'{tools.sha256_to_int32(p)=}')
 
 c: ch.Cuckoo = get_cuckoo_items(passwords)
-for i, x in enumerate(c.data_structure):
-    # print(x)
-    pass
+# for i, x in enumerate(c.array):
+#     print(x)
 
 windowing_tensor = get_windowing_tensor(c)
 # print(windowing_tensor)

@@ -6,69 +6,29 @@ import mmh3
 
 from params import *
 from basic_hash_structure import BasicHashStructure
-
-# parameters
-mask_of_power_of_2 = 2 ** output_bits - 1
-log_no_hashes = int(math.log(len(hash_seeds)) / math.log(2)) + 1
-
-
-#The hash family used for Cuckoo hashing relies on the Murmur hash family (mmh3)
-
-def location(seed, item):
-    """
-    :param seed: a seed of a Murmur hash function
-    :param item: an integer
-    :return: Murmur_hash(item_left) xor item_right, where item = item_left || item_right
-    """
-    item_left = item >> output_bits
-    item_right = item & mask_of_power_of_2
-    hash_item_left = mmh3.hash(str(item_left), seed, signed=False) >> (32 - output_bits)
-    return hash_item_left ^ item_right
-
-def left_and_index(item, index):
-    """
-    :param item: an integer
-    :param index: a log_no_hashes bits integer
-    :return: an integer represented as item_left || index
-    """
-    return ((item >> output_bits) << log_no_hashes) + index
+import tools
 
 def extract_index(item_left_and_index):
     """
-    :param item_left_and_index: an integer represented as item_left || index
-    :return: index extracted
+    extracts the index chosen for an item according the the entry value
     """
     return item_left_and_index & (2 ** log_no_hashes - 1)
 
 def reconstruct_item(item_left_and_index, current_location, seed):
     """
-    :param item_left_and_index: an integer represented as item_left || index
-    :param current_location: the corresponding location, i.e. Murmur_hash(item_left) xor item_right
-    :param seed: the seed of the Murmur hash function
-    :return: the integer item
+    reconstructs an item from the cuckoo hash table according to its index
+    in the intersection vector and entry in the cuckoo hash
     """
     item_left = item_left_and_index >> log_no_hashes
     hashed_item_left = mmh3.hash(str(item_left), seed, signed=False) >> (32 - output_bits)
     item_right = hashed_item_left ^ current_location
     return (item_left << output_bits) + item_right
 
-def rand_point(bound, i):
-    """
-    :param bound: an integer
-    :param i: an integer less than bound
-    :return: a uniform integer from [0, bound - 1], distinct from i
-    """
-    value = random.randint(0, bound - 1)
-    while value == i:
-        value = random.randint(0, bound - 1)
-    return value
-
-
 class Cuckoo(BasicHashStructure):
     def __init__(self, hash_seed):
         super().__init__(hash_seed)
         self.recursion_depth = int(8 * math.log(self.number_of_bins) / math.log(2))
-        self.data_structure = [None for _ in range(self.number_of_bins)]
+        self.array = [None for _ in range(self.number_of_bins)]
         self.insert_index = random.randint(0, len(hash_seeds) - 1)
         self.depth = 0
 
@@ -79,27 +39,27 @@ class Cuckoo(BasicHashStructure):
         # map string to int32 and adds to mapping:
         item = super().insert(str_item)
 
-        current_location = location(self.hash_seed[self.insert_index], item)
-        current_item = self.data_structure[current_location]
-        self.data_structure[current_location] = left_and_index(item, self.insert_index)
+        current_location = self.location(self.hash_seed[self.insert_index], item)
+        current_item = self.array[current_location]
+        self.array[current_location] = self.wrap_left_with_idx(item, self.insert_index)
 
         if current_item is None:
             self.insert_index = random.randint(0, len(hash_seeds) - 1)
             self.depth = 0
         else:
             unwanted_index = extract_index(current_item)
-            self.insert_index = rand_point(len(hash_seeds), unwanted_index)
+            self.insert_index = tools.rand_point(len(hash_seeds), unwanted_index)
             if self.depth < self.recursion_depth:
                 self.depth += 1
                 jumping_item = reconstruct_item(current_item, current_location, self.hash_seed[unwanted_index])
                 self.insert(jumping_item)
             else:
-                self.FAIL = 1
+                raise self.failure_exception
 
     def reconstruct_item_from_intersection(self, i) -> Set:
         """
         :param i: The index i is the location of the element in the intersection
         :return: The element matching element
         """
-        int_val = reconstruct_item(self.data_structure[i], i, hash_seeds[self.data_structure[i] % (2 ** log_no_hashes)])
+        int_val = reconstruct_item(self.array[i], i, hash_seeds[self.array[i] % (2 ** log_no_hashes)])
         return self.int_to_value_map[int_val]

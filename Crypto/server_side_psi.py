@@ -38,13 +38,14 @@ def get_poly_coefficients(hashed_passes: HashTable):
 
 def deserialize_client_powers(serialized_client_msg: bytes) -> List[List[Union[ts.BFVVector, None]]]:
     received_data = pickle.loads(serialized_client_msg)
-    srv_context = ts.context_from(received_data[0])
+    client_public_context = ts.context_from(received_data[0])
     received_enc_query_serialized = received_data[1]
     received_enc_query = [[None for _ in range(logB_ell)] for _ in range(base - 1)]
     for i in range(base - 1):
         for j in range(logB_ell):
             if (i + 1) * base ** j - 1 < minibin_capacity:
-                received_enc_query[i][j] = ts.bfv_vector_from(srv_context, received_enc_query_serialized[i][j])
+                received_enc_query[i][j] = ts.bfv_vector_from(client_public_context,
+                                                              received_enc_query_serialized[i][j])
     return received_enc_query
 
 def calculate_encrypted_powers(encrypted_query):

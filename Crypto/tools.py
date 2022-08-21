@@ -9,6 +9,18 @@ from params import *
 def get_dummy_str():
     return f"dummy{random.randint(0, 256)}"
 
+def rand_point(bound, i):
+    """
+    :param bound: an integer
+    :param i: an integer less than bound
+    :return: a uniform integer from [0, bound - 1], distinct from i
+    """
+    value = random.randint(0, bound - 1)
+    while value == i:
+        value = random.randint(0, bound - 1)
+    return value
+
+
 def sha256_to_int32(s: str) -> int:
     """
     returns an integer corresponding to the sha-256 value of s

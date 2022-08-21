@@ -18,9 +18,9 @@ def get_cuckoo_items(passwords: List[str]) -> Cuckoo:
     [cuckoo.insert(pswd) for pswd in passwords]
 
     # Fill empty bins with a dummy password:
-    for bin_ in range(len(cuckoo.data_structure)):
-        if cuckoo.data_structure[bin_] is None:
-            cuckoo.data_structure[bin_] = tools.sha256_to_int32(tools.get_dummy_str())
+    for bin_ in range(len(cuckoo.array)):
+        if cuckoo.array[bin_] is None:
+            cuckoo.array[bin_] = tools.sha256_to_int32(tools.get_dummy_str())
     return cuckoo
 
 
@@ -30,7 +30,7 @@ def get_windowing_tensor(c: Cuckoo) -> WindowTensor:
     :return: A tensor, each row contains window vector of c's items
     """
     return list(map(lambda pwd: tools.windowing(pwd, plain_modulus),
-                    c.data_structure))
+                    c.array))
 
 
 def prepare_encrypted_message(windowing_tensor: WindowTensor, context_tuple: Tuple[ts.Context, ts.Context]) -> bytes:
