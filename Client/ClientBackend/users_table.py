@@ -7,7 +7,7 @@ from typing import Union, Dict, List, Tuple
 
 from Client.ClientBackend.exceptions import *
 
-from Crypto.crypto import generate_key, encrypt, decrypt
+from Crypto.crypto import *
 
 
 class UsersTable:
@@ -134,13 +134,15 @@ class UsersTable:
             users_table_data = json.load(users_table)
             return list(self._decrypt_login_details(users_table_data[self.username].keys()))
 
-    def get_login_passwords(self) -> List[str]:
+    def get_hashed_login_passwords(self) -> List[int]:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_MODE) as users_table:
             users_table_data = json.load(users_table)
-            return list(set(self._decrypt_login_details([login_details[1] for login_details in
-                                                         users_table_data[self.username]
-                                                        .values()])))
+            decrypted_passwords = list(set(self._decrypt_login_details(
+                [login_details[1] for login_details in users_table_data[self.username].values()])))
+            hash_passwords = [hash_password(password) for password in decrypted_passwords]
+            return hash_passwords
+
 
     def _generate_dummy_login_details(self) -> List[str]:
         # dummy login_site, dummy login_username, dummy password

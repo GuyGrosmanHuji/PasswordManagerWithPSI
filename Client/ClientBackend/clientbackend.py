@@ -18,7 +18,7 @@ class ClientBackend:
                             mode: str) -> None:
         self.users_table.save(login_details, mode)
 
-    def delete_login_details(self, login_site:str) -> None:
+    def delete_login_details(self, login_site: str) -> None:
         self.users_table.delete(login_site)
 
     def load_login_details(self, login_site: str) -> List[str]:
@@ -27,5 +27,5 @@ class ClientBackend:
     def retrieve_all_login_sites(self) -> List[str]:
         return self.users_table.get_login_sites()
 
-    def retrieve_all_login_passwords(self) -> List[str]:
-        return self.users_table.get_login_passwords()
+    def retrieve_hashed_passwords(self) -> List[int]:
+        return self.users_table.get_hashed_login_passwords()
