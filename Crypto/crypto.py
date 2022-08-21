@@ -1,5 +1,6 @@
 import sys
 from hashlib import sha256
+import base64
 
 from cryptography.fernet import Fernet
 
@@ -9,7 +10,7 @@ def hash_password(password: str) -> int:
 
 
 def generate_key(password: str) -> bytes:
-    return sha256(password.encode()).digest()
+    return base64.urlsafe_b64encode(sha256(password.encode()).digest())
 
 
 def encrypt(plaintext: str, key: bytes) -> str:

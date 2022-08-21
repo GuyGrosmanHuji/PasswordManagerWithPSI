@@ -2,17 +2,20 @@ TITLE = "Password Manager with PSI"
 
 WELCOME_MSG = "Welcome to Password Manager with PSI.\n"
 
+NOT_MATCHING_PASSWORD_MSG = "Passwords don't match. Please enter passwords again."
+
 SELECT_OPTS_MSG = "Please select an option:\n"
 
-LOGIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Sign-p\n" \
+LOGIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Sign-up\n" \
                                    "\t\t2. Sign-in\n"
 
 MAIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Add login details\n" \
                                   "\t\t2. Edit login details\n" \
                                   "\t\t3. Delete login details\n" \
                                   "\t\t4. Retrieve login details\n" \
-                                  "\t\t5. Retrieve all login sites\n" \
-                                  "\t\t6. Quit\n"
+                                  "\t\t5. Check login details leakage\n" \
+                                  "\t\t6. Retrieve all login sites\n" \
+                                  "\t\t7. Quit\n"
 
 
 
@@ -20,6 +23,8 @@ MAIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Add login details\n" \
 SITE_MSG = "Site: "
 USERNAME_MSG = "Username: "
 PASSWORD_MSG = "Password: "
+REPEAT_PASSWORD_MSG = "Repeat-Password: "
+
 
 LEAKAGE_MSG = "Your passwords for the following login sites are leaked!"
 
