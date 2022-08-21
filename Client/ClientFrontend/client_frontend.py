@@ -19,6 +19,7 @@ class ClientFrontend:
         self.server_backend = ServerBackend()
 
     def run(self):
+        print(BIG_TITLE)
         while True:
             sig = self._login_screen()
             if not sig: break

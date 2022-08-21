@@ -177,7 +177,7 @@ class UsersTable:
     def _get_login_site_mapping(self, login_site: str, user_table_data=Dict[str, List[str]]) -> str:
         all_login_sites_dict = self._get_all_login_sites_mapping(user_table_data)
 
-        if login_site not in all_login_sites_dict.keys():
+        if login_site not in list(all_login_sites_dict.keys())[1:]:
             raise UnregisteredLoginSite(f"The login site {login_site} does not exist.")
 
         return all_login_sites_dict[login_site]

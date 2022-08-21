@@ -1,3 +1,10 @@
+import os
+
+BIG_TITLE_FILENAME = "title.txt"
+BIG_TITLE_PATH = os.path.join(os.path.dirname(__file__),BIG_TITLE_FILENAME)
+with open(BIG_TITLE_PATH, 'r') as f:
+    BIG_TITLE = f.read()
+
 TITLE = "Password Manager with PSI"
 
 WELCOME_MSG = "Welcome to Password Manager with PSI.\n"
