@@ -115,7 +115,7 @@ class UsersTable:
             users_table_data = json.load(users_table)
 
             if self.username not in users_table_data:
-                raise UnregisteredUser(f"The username {self.username} is unregistered.")
+                raise UnregisteredUser(f"The username {self.username} does not exist.")
 
             # initialize username and master_key here
             self.username = username
