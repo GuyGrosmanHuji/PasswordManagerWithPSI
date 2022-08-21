@@ -1,5 +1,3 @@
-# Thanks to https://github.com/bit-ml/Private-Set-Intersection/
-
 import random
 import math
 from typing import Set
@@ -11,7 +9,7 @@ from basic_hash_structure import BasicHashStructure
 
 # parameters
 mask_of_power_of_2 = 2 ** output_bits - 1
-log_no_hashes = int(math.log(number_of_hashes) / math.log(2)) + 1
+log_no_hashes = int(math.log(len(hash_seeds)) / math.log(2)) + 1
 
 
 #The hash family used for Cuckoo hashing relies on the Murmur hash family (mmh3)
@@ -71,7 +69,7 @@ class Cuckoo(BasicHashStructure):
         super().__init__(hash_seed)
         self.recursion_depth = int(8 * math.log(self.number_of_bins) / math.log(2))
         self.data_structure = [None for _ in range(self.number_of_bins)]
-        self.insert_index = random.randint(0, number_of_hashes - 1)
+        self.insert_index = random.randint(0, len(hash_seeds) - 1)
         self.depth = 0
 
         self.hash_seed = hash_seed
@@ -86,11 +84,11 @@ class Cuckoo(BasicHashStructure):
         self.data_structure[current_location] = left_and_index(item, self.insert_index)
 
         if current_item is None:
-            self.insert_index = random.randint(0, number_of_hashes - 1)
+            self.insert_index = random.randint(0, len(hash_seeds) - 1)
             self.depth = 0
         else:
             unwanted_index = extract_index(current_item)
-            self.insert_index = rand_point(number_of_hashes, unwanted_index)
+            self.insert_index = rand_point(len(hash_seeds), unwanted_index)
             if self.depth < self.recursion_depth:
                 self.depth += 1
                 jumping_item = reconstruct_item(current_item, current_location, self.hash_seed[unwanted_index])

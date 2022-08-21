@@ -78,7 +78,7 @@ def low_depth_multiplication(vector):
             return low_depth_multiplication(vec)
 
 
-def power_reconstruct(powers_window, power):
+def get_all_powers(powers_window, power):
     """
     :param: window: a matrix of integers as powers of y; in the protocol is the matrix with entries window[i][j] = [y ** i * base ** j]
     :param: exponent: an integer, will be an exponent <= logB_ell

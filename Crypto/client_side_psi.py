@@ -50,7 +50,7 @@ def prepare_encrypted_message(windowing_tensor: WindowTensor, context_tuple: Tup
                     plain_query[k] = windowing_tensor[k][i][j]
                 enc_query[i][j] = ts.bfv_vector(private_context, plain_query)
 
-    enc_query_serialized = [[None for j in range(logB_ell)] for i in range(1, base)]
+    enc_query_serialized = [[None for _ in range(logB_ell)] for _ in range(1, base)]
     for j in range(logB_ell):
         for i in range(base - 1):
             if (i + 1) * base ** j - 1 < minibin_capacity:
@@ -70,7 +70,7 @@ def decrypt_server_answer(answer: bytes, private_context: ts.Context) -> List[in
 
 def find_intersection(decrypted_answer: List[List[int]], cuckoo: Cuckoo) -> Set[str]:
     client_intersection = set()
-    for j in range(alpha):
+    for j in range(num_parts):
         for i in range(poly_modulus_degree):
             if decrypted_answer[j][i] == 0:
                 common_values = cuckoo.reconstruct_item_from_intersection(i)

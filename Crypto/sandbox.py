@@ -1,4 +1,3 @@
-import numpy as np
 from client_side_psi import *
 import cuckoo_hash as ch
 

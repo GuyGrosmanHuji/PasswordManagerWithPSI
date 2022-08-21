@@ -2,10 +2,10 @@ import math
 import mmh3
 
 #parameters
-from params import output_bits, number_of_hashes
+from params import output_bits, hash_seeds
 from basic_hash_structure import BasicHashStructure
 
-log_no_hashes = int(math.log(number_of_hashes) / math.log(2)) + 1
+log_no_hashes = int(math.log(len(hash_seeds)) / math.log(2)) + 1
 mask_of_power_of_2 = 2 ** output_bits - 1
 
 
