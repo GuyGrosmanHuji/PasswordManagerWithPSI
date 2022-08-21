@@ -7,7 +7,8 @@ NOT_MATCHING_PASSWORD_MSG = "Passwords don't match. Please enter passwords again
 SELECT_OPTS_MSG = "Please select an option:\n"
 
 LOGIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Sign-up\n" \
-                                   "\t\t2. Sign-in\n"
+                                   "\t\t2. Sign-in\n" \
+                                   "\t\t3. Quit\n"
 
 MAIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Add login details\n" \
                                   "\t\t2. Edit login details\n" \
@@ -15,7 +16,8 @@ MAIN_OPTS_MSG = SELECT_OPTS_MSG + "\t\t1. Add login details\n" \
                                   "\t\t4. Retrieve login details\n" \
                                   "\t\t5. Check login details leakage\n" \
                                   "\t\t6. Retrieve all login sites\n" \
-                                  "\t\t7. Quit\n"
+                                  "\t\t7. Log-out\n" \
+                                  "\t\t8. Quit\n"
 
 
 
@@ -39,4 +41,6 @@ GOODBYE_MSG = "Goodbye!"
 INVALID_INPUT_MSG = "Invalid input"
 
 ERROR_PREFIX = "Error: "
+
+PRESS_ENTER_MSG = "Press ENTER to continue."
 

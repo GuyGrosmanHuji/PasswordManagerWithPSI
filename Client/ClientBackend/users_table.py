@@ -70,20 +70,20 @@ class UsersTable:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
+            user_table_data = users_table_data[self.username]
 
-            encrypted_login_details = self._encrypt_login_details(login_details)
-
+            login_site = login_details[UsersTable.SITE_IDX]
             if mode == UsersTable.EDIT_MODE:
-                if not encrypted_login_details[UsersTable.SITE_IDX] in \
-                       users_table_data[self.username]:
-                    raise UnregisteredLoginSite(f"The login site"
-                                                f" {login_details[UsersTable.SITE_IDX]} is "
-                                                f"unregistered.")
+                encrypted_login_site = self._get_login_site_mapping(login_site, user_table_data)
+            elif mode == UsersTable.ADD_MODE:
+                encrypted_login_site = encrypt(login_site, self.master_key)
 
+            encrypted_login_details = [encrypted_login_site] + \
+                                      self._encrypt_login_details(login_details[1:])
             encrypted_login_details = UsersTable._arrange_login_details(encrypted_login_details)
-            all_encrypted_login_details = users_table_data[self.username]
-            all_encrypted_login_details.update(encrypted_login_details)
-            users_table_data[self.username] = all_encrypted_login_details
+            user_table_data.update(encrypted_login_details)
+            users_table_data[self.username] = user_table_data
+
             users_table.seek(UsersTable.FILE_BEGIN)
             json.dump(users_table_data, users_table, indent=UsersTable.JSON_INDENT)
             users_table.truncate()
@@ -91,49 +91,45 @@ class UsersTable:
     def delete(self, login_site: str) -> None:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
-            try:
-                users_table_data = json.load(users_table)
+            users_table_data = json.load(users_table)
+            user_table_data = users_table_data[self.username]
 
-                encrypted_login_site = encrypt(login_site, self.master_key)
-                del users_table_data[self.username][encrypted_login_site]
+            encrypted_login_site = self._get_login_site_mapping(login_site, user_table_data)
+            del users_table_data[self.username][encrypted_login_site]
 
-                users_table.seek(UsersTable.FILE_BEGIN)
-                json.dump(users_table_data, users_table, indent=UsersTable.JSON_INDENT)
-                users_table.truncate()
-
-            except KeyError:
-                raise UnregisteredLoginSite(f"The login site {login_site} is unregistered.")
+            users_table.seek(UsersTable.FILE_BEGIN)
+            json.dump(users_table_data, users_table, indent=UsersTable.JSON_INDENT)
+            users_table.truncate()
 
     def load(self, login_site: str) -> List[str]:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
-            try:
-                users_table_data = json.load(users_table)
+            users_table_data = json.load(users_table)
+            user_table_data = users_table_data[self.username]
 
-                encrypted_login_site = encrypt(login_site, self.master_key)
+            encrypted_login_site = self._get_login_site_mapping(login_site, user_table_data)
 
-                # returns decrypted login username, decrypted login password
-                return self._decrypt_login_details(
-                    users_table_data[self.username][encrypted_login_site])
-            except KeyError:
-                raise UnregisteredLoginSite(f"The login site{login_site} is unregistered.")
+            # returns decrypted login username, decrypted login password
+            return self._decrypt_login_details(user_table_data[encrypted_login_site])
 
     def verify(self, username: str, password: str) -> None:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
 
+            # initialize username
+            self.username = username
+
             if self.username not in users_table_data:
                 raise UnregisteredUser(f"The username {self.username} does not exist.")
 
-            # initialize username and master_key here
-            self.username = username
+            # initialize master_key
             self.master_key = generate_key(password)
 
             # convert dictionary of login details of users to list: take the first element from
             # there which is dummy login details, and take the first element in the tuple which
             # is the encrypted dummy login site
-            dummy_login_site = list(users_table_data[self.username])[0][UsersTable.SITE_IDX]
+            dummy_login_site = list(users_table_data[self.username])[0]
 
             # if the password is wrong, should raise InvalidToken exception
             try:
@@ -145,8 +141,8 @@ class UsersTable:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
-            return [decrypt(login_site, self.master_key) for login_site in
-                    users_table_data[self.username]]
+            return [decrypt(encrypted_login_site, self.master_key) for encrypted_login_site in
+                    users_table_data[self.username]][1:]
 
     def get_hashed_login_passwords(self) -> List[int]:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
@@ -177,6 +173,18 @@ class UsersTable:
 
     def _decrypt_login_details(self, login_details: Union[List[str], Tuple[str]]) -> List[str]:
         return [decrypt(detail, self.master_key) for detail in login_details]
+
+    def _get_login_site_mapping(self, login_site: str, user_table_data=Dict[str, List[str]]) -> str:
+        all_login_sites_dict = self._get_all_login_sites_mapping(user_table_data)
+
+        if login_site not in all_login_sites_dict.keys():
+            raise UnregisteredLoginSite(f"The login site {login_site} does not exist.")
+
+        return all_login_sites_dict[login_site]
+
+    def _get_all_login_sites_mapping(self, user_table_data=Dict[str, List[str]]) -> Dict[str, str]:
+        return {decrypt(encrypted_login_site, self.master_key): encrypted_login_site
+                for encrypted_login_site in user_table_data.keys()}
 
     @staticmethod
     def _generate_random_string() -> str:
