@@ -109,8 +109,8 @@ class UsersTable:
 
             encrypted_login_site = self._get_login_site_mapping(login_site, user_table_data)
 
-            # returns decrypted login username, decrypted login password
-            return self._decrypt_login_details(user_table_data[encrypted_login_site])
+        # returns decrypted login username, decrypted login password
+        return self._decrypt_login_details(user_table_data[encrypted_login_site])
 
     def verify(self, username: str, password: str) -> None:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
@@ -141,28 +141,28 @@ class UsersTable:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
-            return [decrypt(encrypted_login_site, self.master_key) for encrypted_login_site in
-                    users_table_data[self.username]][1:]
+        return [decrypt(encrypted_login_site, self.master_key) for encrypted_login_site in
+                users_table_data[self.username]][1:]
 
-    def get_hashed_login_passwords(self) -> List[int]:
+    def get_all_login_passwords(self) -> List[str]:
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
             decrypted_passwords = list(set(self._decrypt_login_details(
                 [login_details[1] for login_details in users_table_data[self.username].values()])))
-            hash_passwords = [hash_password(password) for password in decrypted_passwords]
-            return hash_passwords
+        return decrypted_passwords
 
     def get_login_sites_by_passwords(self, passwords):
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
             user_table_data = users_table_data[self.username]
-            return [decrypt(login_site, self.master_key) for login_site, login_values in
-                    user_table_data if self._decrypt_login_details([login_site, *login_values])[
-                        UsersTable.PASSWORD_IDX] in passwords]
+        return [decrypt(login_site, self.master_key) for login_site, login_values in
+                user_table_data if self._decrypt_login_details([login_site, *login_values])[
+                    UsersTable.PASSWORD_IDX] in passwords]
 
-    def _generate_dummy_login_details(self) -> List[str]:
+    @staticmethod
+    def _generate_dummy_login_details() -> List[str]:
         # dummy login_site, dummy login_username, dummy password
         return [UsersTable._generate_random_string(),
                 UsersTable._generate_random_string(),
@@ -195,3 +195,4 @@ class UsersTable:
     def _arrange_login_details(login_details: List[str]) -> Dict[str, List[str]]:
         return {login_details[UsersTable.SITE_IDX]: [login_details[UsersTable.USERNAME_IDX],
                                                      login_details[UsersTable.PASSWORD_IDX]]}
+

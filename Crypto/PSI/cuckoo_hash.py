@@ -4,9 +4,9 @@ from typing import Set
 
 import mmh3
 
-from params import *
-from basic_hash_structure import BasicHashStructure
-import tools
+from Crypto.PSI.params import *
+from Crypto.PSI.basic_hash_structure import BasicHashStructure
+import Crypto.PSI.tools as tools
 
 def extract_index(item_left_and_index):
     """
