@@ -2,10 +2,9 @@ import pickle
 import tenseal as ts
 from typing import List, Set, Tuple
 
-from params import *
-from cuckoo_hash import Cuckoo
-
-import tools
+from Crypto.PSI.params import *
+from Crypto.PSI.cuckoo_hash import Cuckoo
+import Crypto.PSI.tools as tools
 
 WindowTensor = List[List[List[int]]]
 
@@ -68,7 +67,7 @@ def decrypt_server_answer(answer: bytes, context_tuple: Tuple[ts.Context, ts.Con
 
     return decrypts
 
-def find_intersection(decrypted_answer: List[List[int]], cuckoo: Cuckoo) -> Set[str]:
+def find_intersection(decrypted_answer: List[int], cuckoo: Cuckoo) -> Set[str]:
     client_intersection = set()
     for i in range(num_parts):
         for j in range(poly_modulus_degree):

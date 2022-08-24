@@ -1,4 +1,5 @@
 import socket
+import time
 from typing import Union, Tuple, Optional
 from Communication.params import *
 from Communication.exceptions import *
@@ -35,6 +36,7 @@ class SocketFacade:
         s = self._choose_socket()
         length_msg = f'{len(msg)}{FILLER * (RECV_LENGTH - len(msg))}'
         s.sendall(length_msg.encode())
+        time.sleep(0.5)
         s.sendall(msg)
 
     def get_msg(self) -> bytes:
@@ -61,7 +63,7 @@ class SocketFacade:
             self.conn, _ = self.socket.accept()
         return self
 
-    def __exit__(self):
+    def __exit__(self, *args):
         if self.conn:
             self.conn.close()
             self.conn = None

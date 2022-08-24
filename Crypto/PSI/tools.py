@@ -4,7 +4,8 @@ from hashlib import sha256
 from typing import *
 import tenseal as ts
 import numpy as np
-from params import *
+
+from Crypto.PSI.params import *
 
 def get_dummy_str():
     return f"dummy{random.randint(0, 256)}"

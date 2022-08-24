@@ -13,8 +13,9 @@ class PasswordsTable:
             passwords_data = json.load(passwords_table)
             pw_hashes = list(passwords_data.values())
             passwords_mappings = self._map_passwords(pw_hashes)
-            return passwords_mappings
+        return passwords_mappings
 
-    def _map_passwords(self, pw_hashes):
+    @staticmethod
+    def _map_passwords(pw_hashes):
         return [int.from_bytes(bytes.fromhex(pw_hash)[0:4], byteorder=sys.byteorder) for pw_hash in
                 pw_hashes]

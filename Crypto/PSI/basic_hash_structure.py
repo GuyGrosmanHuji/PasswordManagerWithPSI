@@ -2,8 +2,8 @@ from collections import defaultdict
 import mmh3
 import math
 
-from tools import sha256_to_int32
-from params import *
+from Crypto.PSI.tools import sha256_to_int32
+from Crypto.PSI.params import *
 
 log_no_hashes = int(math.log(len(hash_seeds)) / math.log(2)) + 1
 mask_of_power_of_2 = 2 ** output_bits - 1
