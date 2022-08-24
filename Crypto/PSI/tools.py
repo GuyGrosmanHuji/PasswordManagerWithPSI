@@ -30,6 +30,8 @@ def sha256_to_int32(s: str) -> int:
     s_hash = sha256(s.encode()).digest()[0:4]       # cut the 32 first bits
     return int.from_bytes(s_hash, byteorder=sys.byteorder)
 
+PRIVATE = 0
+PUBLIC = 1
 def get_context() -> Tuple[ts.Context, ts.Context]:
     private_context = ts.context(ts.SCHEME_TYPE.BFV, poly_modulus_degree=poly_modulus_degree, plain_modulus=plain_modulus)
     public_context = ts.context_from(private_context.serialize())

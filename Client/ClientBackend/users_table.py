@@ -145,13 +145,23 @@ class UsersTable:
                     users_table_data[self.username]][1:]
 
     def get_hashed_login_passwords(self) -> List[int]:
+        # TODO: maybe delete, we handle it in the PSI methods and we have a mapping int -> str there,
+        #       which is missing here.
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
                   UsersTable.FILE_READ_WRITE_MODE) as users_table:
             users_table_data = json.load(users_table)
             decrypted_passwords = list(set(self._decrypt_login_details(
                 [login_details[1] for login_details in users_table_data[self.username].values()])))
             hash_passwords = [hash_password(password) for password in decrypted_passwords]
-            return hash_passwords
+        return hash_passwords
+
+    def get_all_login_passwords(self) -> List[str]:
+        with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
+                  UsersTable.FILE_READ_WRITE_MODE) as users_table:
+            users_table_data = json.load(users_table)
+            decrypted_passwords = list(set(self._decrypt_login_details(
+                [login_details[1] for login_details in users_table_data[self.username].values()])))
+        return decrypted_passwords
 
     def get_login_sites_by_passwords(self, passwords):
         with open(os.path.join(UsersTable.BASE_DIR, UsersTable.USERS_TABLE_FILENAME),
