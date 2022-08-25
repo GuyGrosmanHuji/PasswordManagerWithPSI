@@ -9,11 +9,10 @@ class ServerBackend:
         self.updated = False
         self.passwords_table = PasswordsTable()
         self.passwords = self.passwords_table.load()
-        print("S1")
+        print("SERVER: Calculating polynomial...")
         self.hash_table = insert_to_hash_table(self.passwords)
-        print("S2")
+        print("SERVER: Calculating polynomial...")
         self.poly_coefficients = get_poly_coefficients(self.hash_table)
-        print("S3")
 
     def run(self):
         """
