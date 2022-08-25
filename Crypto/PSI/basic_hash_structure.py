@@ -2,7 +2,7 @@ from collections import defaultdict
 import mmh3
 import math
 
-from Crypto.PSI.tools import sha256_to_int32
+from Crypto.PSI.utils import sha256_to_int32
 from Crypto.PSI.params import *
 
 log_no_hashes = int(math.log(len(hash_seeds)) / math.log(2)) + 1

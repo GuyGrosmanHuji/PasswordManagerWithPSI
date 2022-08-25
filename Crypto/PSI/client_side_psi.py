@@ -4,7 +4,7 @@ from typing import List, Set, Tuple
 
 from Crypto.PSI.params import *
 from Crypto.PSI.cuckoo_hash import Cuckoo
-import Crypto.PSI.tools as tools
+import Crypto.PSI.utils as tools
 
 WindowTensor = List[List[List[int]]]
 
@@ -17,9 +17,9 @@ def get_cuckoo_items(passwords: List[str]) -> Cuckoo:
     [cuckoo.insert(pswd) for pswd in passwords]
 
     # Fill empty bins with a dummy password:
-    for bin_ in range(len(cuckoo.array)):
-        if cuckoo.array[bin_] is None:
-            cuckoo.array[bin_] = tools.sha256_to_int32(tools.get_dummy_str())
+    for bin_ in range(len(cuckoo.data)):
+        if cuckoo.data[bin_] is None:
+            cuckoo.data[bin_] = tools.sha256_to_int32(tools.get_dummy_str())
     return cuckoo
 
 
@@ -29,7 +29,7 @@ def get_windowing_tensor(c: Cuckoo) -> WindowTensor:
     :return: A tensor, each row contains window vector of c's items
     """
     return list(map(lambda pwd: tools.windowing(pwd, plain_modulus),
-                    c.array))
+                    c.data))
 
 
 def prepare_encrypted_message(windowing_tensor: WindowTensor, context_tuple: Tuple[ts.Context, ts.Context]) -> bytes:
@@ -38,19 +38,19 @@ def prepare_encrypted_message(windowing_tensor: WindowTensor, context_tuple: Tup
     """
     private_context, public_context = context_tuple
     plain_query = [None for _ in range(len(windowing_tensor))]
-    enc_query = [[None for _ in range(logB_ell)] for _ in range(1, base)]
+    enc_query = [[None for _ in range(log_windowing_param)] for _ in range(1, base)]
 
     # We create the <<batched>> query to be sent to the server
     # By our choice of parameters, number of bins = poly modulus degree (m/N =1), so we get (base - 1) * logB_ell ciphertexts
-    for j in range(logB_ell):
+    for j in range(log_windowing_param):
         for i in range(base - 1):
             if (i + 1) * base ** j - 1 < minibin_capacity:
                 for k in range(len(windowing_tensor)):
                     plain_query[k] = windowing_tensor[k][i][j]
                 enc_query[i][j] = ts.bfv_vector(private_context, plain_query)
 
-    enc_query_serialized = [[None for _ in range(logB_ell)] for _ in range(1, base)]
-    for j in range(logB_ell):
+    enc_query_serialized = [[None for _ in range(log_windowing_param)] for _ in range(1, base)]
+    for j in range(log_windowing_param):
         for i in range(base - 1):
             if (i + 1) * base ** j - 1 < minibin_capacity:
                 enc_query_serialized[i][j] = enc_query[i][j].serialize()

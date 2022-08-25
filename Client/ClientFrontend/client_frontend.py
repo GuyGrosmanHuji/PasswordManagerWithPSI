@@ -6,7 +6,6 @@ from Client.ClientFrontend.inputs import *
 from Client.ClientFrontend.messages import *
 
 cls = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
-# cls = lambda: print()
 
 
 class ClientFrontend:
@@ -54,6 +53,7 @@ class ClientFrontend:
     def _main_screen(self):
         while True:
             cls()
+            print(BIG_TITLE)
             print(MAIN_OPTS_MSG)
             opt = input()
             while opt not in MAIN_OPTS:
@@ -97,9 +97,8 @@ class ClientFrontend:
         self.client_backend.verify_user(username, password)
 
     def _psi(self):
-        # TODO: print it nicely
-        compromised_websites = self.client_backend.psi_protocol()
-        return compromised_websites
+        print(CALC_PSI)
+        return self.client_backend.psi_protocol()
 
     def _write_login_details(self, mode: str):
         login_site = input(SITE_MSG)
@@ -125,12 +124,14 @@ class ClientFrontend:
         # expecting to get list (empty or more elements) with all the login sites that are
         # compromised
         leaked_passwords = self._psi()
-        if leaked_passwords:
+        if len(leaked_passwords) > 0:
             print(LEAKAGE_MSG)
             compromised_login_sites = self.client_backend.retrieve_compromised_login_sites(
                 leaked_passwords)
             print('\n'.join(compromised_login_sites))
-            print()
+        else:
+            print(NO_LEAKAGE)
+        print()
 
     def _retrieve_all_login_sites(self):
         login_sites = self.client_backend.retrieve_all_login_sites()

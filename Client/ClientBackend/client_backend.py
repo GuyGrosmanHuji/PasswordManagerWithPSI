@@ -1,10 +1,10 @@
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Set
 
 from Client.ClientBackend.users_table import UsersTable
 import Crypto.PSI.client_side_psi as cs_psi
-from Crypto.PSI.tools import get_context
+from Crypto.PSI.utils import get_context
 import Communication.params as comm
-from Communication.tools import SocketFacade
+from Communication.utils import SocketFacade
 
 class ClientBackend:
     def __init__(self):
@@ -39,7 +39,7 @@ class ClientBackend:
     def retrieve_all_login_sites(self) -> List[str]:
         return self.users_table.get_login_sites()
 
-    def psi_protocol(self) -> List[str]:
+    def psi_protocol(self) -> Set[str]:
         """
         Returns a list of all the leaked passwords
         """
@@ -58,5 +58,4 @@ class ClientBackend:
         # Offline post-process: intersection calculation procedure:
         dec_server_feedback = cs_psi.decrypt_server_answer(server_feedback, self.context)
         intersection = cs_psi.find_intersection(dec_server_feedback, self.cuckoo)
-        print(intersection)
-        return self.retrieve_compromised_login_sites(list(intersection))
+        return intersection

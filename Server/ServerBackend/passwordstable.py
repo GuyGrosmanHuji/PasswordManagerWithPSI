@@ -2,20 +2,20 @@ import json
 import os
 import sys
 
-from typing import Union, List
-
 
 class PasswordsTable:
     WORK_DIR = os.getcwd()
-    PASSWORDS_FILENAME = os.path.join(WORK_DIR, "passwords.json")
+    PASSWORDS_FILENAME = os.path.join(WORK_DIR, "Server", "ServerBackend", "passwords.json")
     READ_MODE = 'r'
 
-    def load(self):
+    @staticmethod
+    def load():
         with open(PasswordsTable.PASSWORDS_FILENAME, PasswordsTable.READ_MODE) as passwords_table:
             passwords_data = json.load(passwords_table)
         return passwords_data
 
-    def save(self, passwords):
+    @staticmethod
+    def save(passwords):
         with open(PasswordsTable.PASSWORDS_FILENAME, PasswordsTable.READ_MODE) as passwords_table:
             json.dump(passwords_table, passwords)
             passwords_table.truncate()

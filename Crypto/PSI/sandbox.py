@@ -13,7 +13,7 @@ c: ch.Cuckoo = get_cuckoo_items(passwords)
 windowing_tensor = get_windowing_tensor(c)
 # print(windowing_tensor)
 
-context = tools.get_context()
+context = utils.get_context()
 enc_msg = prepare_encrypted_message(windowing_tensor, context)
 # print(enc_msg)
 

@@ -46,3 +46,7 @@ INVALID_INPUT_MSG = "Invalid input"
 ERROR_PREFIX = "Error: "
 
 PRESS_ENTER_MSG = "Press ENTER to continue."
+
+CALC_PSI = "Checking for leaked passwords..."
+
+NO_LEAKAGE = "Congratulations! None of you passwords are leaked!"
