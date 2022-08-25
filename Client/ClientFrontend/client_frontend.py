@@ -6,22 +6,26 @@ from Client.ClientFrontend.inputs import *
 from Client.ClientFrontend.messages import *
 from Server.ServerBackend.server_backend import ServerBackend
 
-# cls = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
-cls = lambda: print()
+cls = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
+# cls = lambda: print()
 
 
 class ClientFrontend:
-    CONT_SIGNAL: int = 1
     QUIT_SIGNAL: int = 0
+    CONT_SIGNAL: int = 1
+    BAD_LOG_IN_SIGNAL: int = 2
 
     def __init__(self):
         self.client_backend = ClientBackend()
         self.server_backend = ServerBackend()
 
     def run(self):
+        cls()
         print(BIG_TITLE)
         while True:
             sig = self._login_screen()
+            while sig == ClientFrontend.BAD_LOG_IN_SIGNAL:
+                sig = self._login_screen()
             if not sig: break
             sig = self._main_screen()
             if not sig: break
@@ -37,19 +41,21 @@ class ClientFrontend:
             opt = input()
         if opt == LOG_IN_QUIT_OPT:
             return ClientFrontend.QUIT_SIGNAL
-        while True:
-            try:
-                username = input(USERNAME_MSG)
-                if opt == SIGN_UP_OPT:
-                    self._sign_up_screen(username=username)
-                elif opt == SIGN_IN_OPT:
-                    self._sign_in_screen(username=username)
-                return ClientFrontend.CONT_SIGNAL
-            except Exception as e:
-                print(ERROR_PREFIX + str(e))
+        try:
+            username = input(USERNAME_MSG)
+            if opt == SIGN_UP_OPT:
+                self._sign_up_screen(username=username)
+            elif opt == SIGN_IN_OPT:
+                self._sign_in_screen(username=username)
+            return ClientFrontend.CONT_SIGNAL
+        except Exception as e:
+            print(ERROR_PREFIX + str(e))
+            print()
+            return ClientFrontend.BAD_LOG_IN_SIGNAL
 
     def _main_screen(self):
         while True:
+            cls()
             print(MAIN_OPTS_MSG)
             opt = input()
             while opt not in MAIN_OPTS:
@@ -73,11 +79,10 @@ class ClientFrontend:
                     return ClientFrontend.CONT_SIGNAL
                 elif opt == MAIN_SCREEN_QUIT_OPT:
                     return ClientFrontend.QUIT_SIGNAL
-                self._continue_screen()
             except Exception as e:
                 print(ERROR_PREFIX + str(e))
             finally:
-                cls()
+                self._continue_screen()
 
     def _sign_up_screen(self, username: str):
         while True:
