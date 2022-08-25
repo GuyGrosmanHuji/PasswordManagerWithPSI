@@ -6,7 +6,7 @@ import mmh3
 
 from Crypto.PSI.params import *
 from Crypto.PSI.basic_hash_structure import BasicHashStructure
-import Crypto.PSI.tools as tools
+import Crypto.PSI.utils as tools
 
 def extract_index(item_left_and_index):
     """
@@ -28,7 +28,7 @@ class Cuckoo(BasicHashStructure):
     def __init__(self, hash_seed):
         super().__init__(hash_seed)
         self.recursion_depth = int(8 * math.log(self.number_of_bins) / math.log(2))
-        self.array = [None for _ in range(self.number_of_bins)]
+        self.data = [None for _ in range(self.number_of_bins)]
         self.insert_index = random.randint(0, len(hash_seeds) - 1)
         self.depth = 0
 
@@ -40,8 +40,8 @@ class Cuckoo(BasicHashStructure):
         item = super().insert(str_item)
 
         current_location = self.location(self.hash_seed[self.insert_index], item)
-        current_item = self.array[current_location]
-        self.array[current_location] = self.wrap_left_with_idx(item, self.insert_index)
+        current_item = self.data[current_location]
+        self.data[current_location] = self.wrap_left_with_idx(item, self.insert_index)
 
         if current_item is None:
             self.insert_index = random.randint(0, len(hash_seeds) - 1)
@@ -61,5 +61,5 @@ class Cuckoo(BasicHashStructure):
         :param i: The index i is the location of the element in the intersection
         :return: The element matching element
         """
-        int_val = reconstruct_item(self.array[i], i, hash_seeds[self.array[i] % (2 ** log_no_hashes)])
+        int_val = reconstruct_item(self.data[i], i, hash_seeds[self.data[i] % (2 ** log_no_hashes)])
         return self.int_to_value_map[int_val]

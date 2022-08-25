@@ -1,7 +1,7 @@
 import threading
 
 import Communication.params as comm
-from Communication.tools import SocketFacade
+from Communication.utils import SocketFacade
 from Client.ClientFrontend.client_frontend import ClientFrontend
 from Server.ServerBackend.server_backend import ServerBackend
 

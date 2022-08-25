@@ -7,15 +7,19 @@ from tqdm import tqdm
 
 from Crypto.PSI.params import *
 from Crypto.PSI.hash_table import HashTable
-import Crypto.PSI.tools as tools
+import Crypto.PSI.utils as tools
 
-def insert_to_hash_table(passwords: List[str]) -> HashTable:
+tqdm_props = {"n_fmt": "", "total_fmt": ""}
+
+def insert_to_hash_table(passwords: List[str], _print=True) -> HashTable:
     hash_table = HashTable(hash_seeds, bin_capacity)
     [hash_table.insert(item) for item in passwords]
 
     # the hash table is padded with dummy_msg_server
     number_of_bins = 2 ** output_bits
-    with tqdm(total=number_of_bins * bin_capacity) as pbar:
+    with tqdm(total=number_of_bins * bin_capacity,
+              disable=(not _print),
+              bar_format="{desc}: {percentage:.3f}%|{bar}|") as pbar:
         for i in range(number_of_bins):
             for j in range(bin_capacity):
                 if hash_table.data[i][j] is None:
@@ -25,9 +29,11 @@ def insert_to_hash_table(passwords: List[str]) -> HashTable:
 
     return hash_table
 
-def get_poly_coefficients(hashed_passes: HashTable):
+def get_poly_coefficients(hashed_passes: HashTable, _print=True):
     poly_coeffs = []
-    with tqdm(total=hashed_passes.number_of_bins*num_parts) as pbar:
+    with tqdm(total=hashed_passes.number_of_bins*num_parts,
+              disable=not _print,
+              bar_format="{desc}: {percentage:.3f}%|{bar}|") as pbar:
         for i in range(hashed_passes.number_of_bins):
             coeffs_from_bin = []
             # we have alpha polynomials - the hash table is partitioned into alpha parts
@@ -42,9 +48,9 @@ def deserialize_client_powers(serialized_client_msg: bytes) -> List[List[Union[t
     received_data = pickle.loads(serialized_client_msg)
     client_public_context = ts.context_from(received_data[0])
     received_enc_query_serialized = received_data[1]
-    received_enc_query = [[None for _ in range(logB_ell)] for _ in range(base - 1)]
+    received_enc_query = [[None for _ in range(log_windowing_param)] for _ in range(base - 1)]
     for i in range(base - 1):
-        for j in range(logB_ell):
+        for j in range(log_windowing_param):
             if (i + 1) * base ** j - 1 < minibin_capacity:
                 received_enc_query[i][j] = ts.bfv_vector_from(client_public_context,
                                                               received_enc_query_serialized[i][j])
@@ -53,7 +59,7 @@ def deserialize_client_powers(serialized_client_msg: bytes) -> List[List[Union[t
 def calculate_encrypted_powers(encrypted_query):
     powers_query = [None for _ in range(minibin_capacity)]
     for i in range(base - 1):
-        for j in range(logB_ell):
+        for j in range(log_windowing_param):
             if (i + 1) * base ** j - 1 < minibin_capacity:
                 powers_query[(i + 1) * base ** j - 1] = encrypted_query[i][j]
 
