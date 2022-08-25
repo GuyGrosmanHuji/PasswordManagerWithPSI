@@ -158,7 +158,7 @@ class UsersTable:
             users_table_data = json.load(users_table)
             user_table_data = users_table_data[self.username]
         return [decrypt(login_site, self.master_key) for login_site, login_values in
-                user_table_data if self._decrypt_login_details([login_site, *login_values])[
+                user_table_data if self._decrypt_login_details([login_site]+login_values)[
                     UsersTable.PASSWORD_IDX] in passwords]
 
     @staticmethod
