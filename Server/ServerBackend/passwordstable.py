@@ -2,6 +2,8 @@ import json
 import os
 import sys
 
+from typing import Union, List
+
 
 class PasswordsTable:
     WORK_DIR = os.getcwd()
@@ -11,9 +13,13 @@ class PasswordsTable:
     def load(self):
         with open(PasswordsTable.PASSWORDS_FILENAME, PasswordsTable.READ_MODE) as passwords_table:
             passwords_data = json.load(passwords_table)
-            pw_hashes = list(passwords_data.values())
-            passwords_mappings = self._map_passwords(pw_hashes)
-        return passwords_mappings
+        return passwords_data
+
+    def save(self, passwords):
+        with open(PasswordsTable.PASSWORDS_FILENAME, PasswordsTable.READ_MODE) as passwords_table:
+            json.dump(passwords_table, passwords)
+            passwords_table.truncate()
+
 
     @staticmethod
     def _map_passwords(pw_hashes):
