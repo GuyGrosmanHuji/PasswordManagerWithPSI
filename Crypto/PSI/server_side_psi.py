@@ -3,7 +3,6 @@ import tenseal as ts
 import numpy as np
 
 from typing import List, Union
-from sympy import randprime
 from tqdm import tqdm
 
 from Crypto.PSI.params import *
