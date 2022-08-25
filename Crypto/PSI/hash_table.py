@@ -1,4 +1,4 @@
-from basic_hash_structure import BasicHashStructure
+from Crypto.PSI.basic_hash_structure import BasicHashStructure
 
 class HashTable(BasicHashStructure):
     def __init__(self, hash_seed, bin_size):

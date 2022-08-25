@@ -4,10 +4,9 @@ import numpy as np
 
 from typing import List, Union
 
-from params import *
-from hash_table import HashTable
-
-import tools
+from Crypto.PSI.params import *
+from Crypto.PSI.hash_table import HashTable
+import Crypto.PSI.tools as tools
 
 def insert_to_hash_table(passwords: List[str]) -> HashTable:
     hash_table = HashTable(hash_seeds, bin_capacity)

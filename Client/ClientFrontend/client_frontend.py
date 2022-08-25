@@ -4,7 +4,6 @@ from pwinput import pwinput
 from Client.ClientBackend.client_backend import ClientBackend
 from Client.ClientFrontend.inputs import *
 from Client.ClientFrontend.messages import *
-from Server.ServerBackend.server_backend import ServerBackend
 
 cls = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 # cls = lambda: print()
@@ -17,7 +16,6 @@ class ClientFrontend:
 
     def __init__(self):
         self.client_backend = ClientBackend()
-        self.server_backend = ServerBackend()
 
     def run(self):
         cls()
@@ -99,7 +97,9 @@ class ClientFrontend:
         self.client_backend.verify_user(username, password)
 
     def _psi(self):
-        pass
+        # TODO: print it nicely
+        compromised_websites = self.client_backend.psi_protocol()
+        return compromised_websites
 
     def _write_login_details(self, mode: str):
         login_site = input(SITE_MSG)

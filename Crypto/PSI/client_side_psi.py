@@ -2,10 +2,9 @@ import pickle
 import tenseal as ts
 from typing import List, Set, Tuple
 
-from params import *
-from cuckoo_hash import Cuckoo
-
-import tools
+from Crypto.PSI.params import *
+from Crypto.PSI.cuckoo_hash import Cuckoo
+import Crypto.PSI.tools as tools
 
 WindowTensor = List[List[List[int]]]
 
@@ -60,20 +59,20 @@ def prepare_encrypted_message(windowing_tensor: WindowTensor, context_tuple: Tup
     message_to_be_sent = [context_serialized, enc_query_serialized]
     return pickle.dumps(message_to_be_sent, protocol=None)
 
-def decrypt_server_answer(answer: bytes, private_context: ts.Context) -> List[int]:
+def decrypt_server_answer(answer: bytes, context_tuple: Tuple[ts.Context, ts.Context]) -> List[int]:
     ciphertexts = pickle.loads(answer)
     decrypts = []
     for ct in ciphertexts:
-        decrypts.append(ts.bfv_vector_from(private_context, ct).decrypt())
+        decrypts.append(ts.bfv_vector_from(context_tuple[tools.PRIVATE], ct).decrypt())
 
     return decrypts
 
-def find_intersection(decrypted_answer: List[List[int]], cuckoo: Cuckoo) -> Set[str]:
+def find_intersection(decrypted_answer: List[int], cuckoo: Cuckoo) -> Set[str]:
     client_intersection = set()
-    for j in range(num_parts):
-        for i in range(poly_modulus_degree):
-            if decrypted_answer[j][i] == 0:
-                common_values = cuckoo.reconstruct_item_from_intersection(i)
+    for i in range(num_parts):
+        for j in range(poly_modulus_degree):
+            if decrypted_answer[i][j] == 0:
+                common_values = cuckoo.reconstruct_item_from_intersection(j)
                 client_intersection = client_intersection.union(common_values)
 
     return client_intersection
