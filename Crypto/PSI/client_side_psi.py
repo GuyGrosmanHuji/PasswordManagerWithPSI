@@ -13,7 +13,7 @@ def get_cuckoo_items(passwords: List[str]) -> Cuckoo:
     :param passwords: a list of strings, each represents a password
     :return: A Cuckoo object with the passwords
     """
-    cuckoo = Cuckoo(hash_seeds)
+    cuckoo = Cuckoo(HASH_SEEDS)
     [cuckoo.insert(pswd) for pswd in passwords]
 
     # Fill empty bins with a dummy password:
@@ -28,7 +28,7 @@ def get_windowing_tensor(c: Cuckoo) -> WindowTensor:
     :param c: a Cuckoo object
     :return: A tensor, each row contains window vector of c's items
     """
-    return list(map(lambda pwd: tools.windowing(pwd, plain_modulus),
+    return list(map(lambda pwd: tools.windowing(pwd, PLAIN_MODULUS),
                     c.data))
 
 
@@ -38,21 +38,19 @@ def prepare_encrypted_message(windowing_tensor: WindowTensor, context_tuple: Tup
     """
     private_context, public_context = context_tuple
     plain_query = [None for _ in range(len(windowing_tensor))]
-    enc_query = [[None for _ in range(log_windowing_param)] for _ in range(1, base)]
+    enc_query = [[None for _ in range(LOG_WINDOWING_PARAM)] for _ in range(1, BASE)]
 
-    # We create the <<batched>> query to be sent to the server
-    # By our choice of parameters, number of bins = poly modulus degree (m/N =1), so we get (base - 1) * logB_ell ciphertexts
-    for j in range(log_windowing_param):
-        for i in range(base - 1):
-            if (i + 1) * base ** j - 1 < minibin_capacity:
+    for j in range(LOG_WINDOWING_PARAM):
+        for i in range(BASE - 1):
+            if (i + 1) * BASE ** j - 1 < MINIBIN_CAPACITY:
                 for k in range(len(windowing_tensor)):
                     plain_query[k] = windowing_tensor[k][i][j]
                 enc_query[i][j] = ts.bfv_vector(private_context, plain_query)
 
-    enc_query_serialized = [[None for _ in range(log_windowing_param)] for _ in range(1, base)]
-    for j in range(log_windowing_param):
-        for i in range(base - 1):
-            if (i + 1) * base ** j - 1 < minibin_capacity:
+    enc_query_serialized = [[None for _ in range(LOG_WINDOWING_PARAM)] for _ in range(1, BASE)]
+    for j in range(LOG_WINDOWING_PARAM):
+        for i in range(BASE - 1):
+            if (i + 1) * BASE ** j - 1 < MINIBIN_CAPACITY:
                 enc_query_serialized[i][j] = enc_query[i][j].serialize()
 
     context_serialized = public_context.serialize()
@@ -69,8 +67,8 @@ def decrypt_server_answer(answer: bytes, context_tuple: Tuple[ts.Context, ts.Con
 
 def find_intersection(decrypted_answer: List[int], cuckoo: Cuckoo) -> Set[str]:
     client_intersection = set()
-    for i in range(num_parts):
-        for j in range(poly_modulus_degree):
+    for i in range(NUM_PARTS):
+        for j in range(POLY_MODULUS_DEGREE):
             if decrypted_answer[i][j] == 0:
                 common_values = cuckoo.reconstruct_item_from_intersection(j)
                 client_intersection = client_intersection.union(common_values)

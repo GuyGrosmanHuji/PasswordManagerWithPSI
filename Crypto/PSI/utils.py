@@ -24,13 +24,15 @@ def sha256_to_int32(s: str) -> int:
 PRIVATE = 0
 PUBLIC = 1
 def get_context() -> Tuple[ts.Context, ts.Context]:
-    private_context = ts.context(ts.SCHEME_TYPE.BFV, poly_modulus_degree=poly_modulus_degree, plain_modulus=plain_modulus)
+    private_context = ts.context(ts.SCHEME_TYPE.BFV, poly_modulus_degree=POLY_MODULUS_DEGREE, plain_modulus=PLAIN_MODULUS)
     public_context = ts.context_from(private_context.serialize())
     public_context.make_context_public()
     return private_context, public_context
 
 def windowing(y, modulus):
-    return [[pow(y, (i+1) * base ** j, modulus) for j in range(log_windowing_param)] for i in range(base - 1)]
+    return [[pow(y, (i+1) * BASE ** j, modulus)
+             if ((i+1) * BASE ** j - 1 < MINIBIN_CAPACITY) else None
+             for j in range(LOG_WINDOWING_PARAM)] for i in range(BASE - 1)]
 
 def convert_base(n, b):
     if n < b:
@@ -45,30 +47,11 @@ def roots_to_coeffs(roots: List[int], modulus: int):
     return coefficients
 
 def get_all_powers(powers_window, power):
-    base_coefficient = convert_base(power, base)
+    base_coefficient = convert_base(power, BASE)
     powers = []
     j = 0
     for x in base_coefficient:
         if x >= 1:
             powers.append(powers_window[x - 1][j])
         j = j + 1
-    return low_depth_mult(powers)
-
-def low_depth_mult(vec):
-    depth = len(vec)
-    if depth == 1:
-        return vec[0]
-    if depth == 2:
-        return vec[0] * vec[1]
-    else:
-        if depth % 2:
-            vec = []
-            for i in range(int(depth / 2)):
-                vec.append(vec[2 * i] * vec[2 * i + 1])
-            vec.append(vec[depth - 1])
-            return low_depth_mult(vec)
-        else:
-            vec = []
-            for i in range(int(depth / 2)):
-                vec.append(vec[2 * i] * vec[2 * i + 1])
-            return low_depth_mult(vec)
+    return np.prod(np.array(powers))
